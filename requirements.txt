@@ -1,0 +1,11 @@
+numpy
+opencv-python
+Pillow
+pyquaternion
+nuscenes-devkit==1.1.11
+Shapely<2.0.0
+efficientnet_pytorch==0.7.0
+torch
+torchvision
+tqdm
+matplotlib
