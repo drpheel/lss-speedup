@@ -6,6 +6,10 @@ __pycache__/
 
 .venv/
 venv/
+conda-env/
+.conda*/
+.mamba*/
+env/
 
 # Large runtime artifacts
 *.pth
