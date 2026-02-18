@@ -8,7 +8,10 @@ A real-time Bird's-Eye-View (BEV) segmentation demo built on Lift-Splat-Shoot (E
 
 ## Headline Results
 
-From the included reproducible benchmark harness on this setup (**NVIDIA Jetson AGX Orin**):
+From the included reproducible benchmark harness on this setup (**NVIDIA Jetson AGX Orin**, **FP16 enabled**):
+- `torch_serial_voxel`: **0.53 FPS** (unparallelized voxel baseline)
+- `torch`: **14.32 FPS** (parallel voxel pooling in PyTorch)
+- `trt`: **27.82 FPS** (parallel voxel pooling + TensorRT cam/bev)
 - **52.49x FPS** improvement vs the unparallelized voxel baseline (`torch_serial_voxel` -> `trt`)
 - **26.98x FPS** from voxel pooling parallelization alone (`torch_serial_voxel` -> `torch`)
 - **1.94x FPS** from TensorRT on top of parallel PyTorch (`torch` -> `trt`)
