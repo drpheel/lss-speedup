@@ -97,6 +97,10 @@ Default values expected by the streaming runtime:
 - Dataset root: `./data/sets/nuscenes`
 - Weights file: `lss_clean_weights.pth` (in repo root)
 
+Upstream resources:
+- Original pre-trained `lss_clean_weights.pth` download: https://drive.google.com/file/d/1bsUYveW_eOqa4lglryyGQNeC4fyQWvQQ/view
+- Official Lift-Splat-Shoot repository and documentation: https://github.com/nv-tlabs/lift-splat-shoot/
+
 Machine-specific values should go in a local `.env` file (not committed).
 
 1. Copy template:
