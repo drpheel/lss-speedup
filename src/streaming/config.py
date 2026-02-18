@@ -1,25 +1,63 @@
-"""Configuration for live LSS streaming inference."""
+"""Configuration for live LSS streaming inference.
 
+Values can be overridden from environment variables.
+If a project-local `.env` file exists, it is loaded first.
+"""
+
+import os
+from pathlib import Path
 from typing import Tuple
 
-DATAROOT = "/mnt/nvme/data/sets/nuscenes"
-NUSCENES_VERSION = "mini"  # "mini" or "trainval"
-WEIGHTS_PATH = "lss_clean_weights.pth"
-HOST_IP = "0.0.0.0"
-PORT = 8080
-STREAM_FPS = 20
+
+def _load_dotenv(dotenv_path: Path) -> None:
+    if not dotenv_path.exists():
+        return
+    for raw in dotenv_path.read_text().splitlines():
+        line = raw.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        value = value.strip().strip("'").strip('"')
+        if key:
+            os.environ.setdefault(key, value)
+
+
+def _env_bool(name: str, default: bool) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+_load_dotenv(_REPO_ROOT / ".env")
+
+def _resolve_path(path_value: str) -> str:
+    path = Path(path_value).expanduser()
+    if path.is_absolute():
+        return str(path)
+    return str((_REPO_ROOT / path).resolve())
+
+
+DATAROOT = _resolve_path(os.getenv("DATAROOT", "./data/sets/nuscenes"))
+NUSCENES_VERSION = os.getenv("NUSCENES_VERSION", "mini")  # "mini" or "trainval"
+WEIGHTS_PATH = _resolve_path(os.getenv("WEIGHTS_PATH", "lss_clean_weights.pth"))
+HOST_IP = os.getenv("HOST_IP", "0.0.0.0")
+PORT = int(os.getenv("PORT", "8080"))
+STREAM_FPS = int(os.getenv("STREAM_FPS", "20"))
 FRAME_INTERVAL = 1.0 / STREAM_FPS
-JPEG_QUALITY = 70
-STREAM_SCALE = 0.6
-USE_FP16 = True
-SHOW_OVERLAY = False
-LOG_EVERY_SEC = 1.0
-CACHE_BATCHES = 16
-LOOP_DATASET = True
-PREFETCH_FACTOR = 2
-USE_TENSORRT = True
-TRT_DEBUG_TRACEBACK = True
-ENABLE_LIDAR_BEV_EVAL = True
+JPEG_QUALITY = int(os.getenv("JPEG_QUALITY", "70"))
+STREAM_SCALE = float(os.getenv("STREAM_SCALE", "0.6"))
+USE_FP16 = _env_bool("USE_FP16", True)
+SHOW_OVERLAY = _env_bool("SHOW_OVERLAY", False)
+LOG_EVERY_SEC = float(os.getenv("LOG_EVERY_SEC", "1.0"))
+CACHE_BATCHES = int(os.getenv("CACHE_BATCHES", "16"))
+LOOP_DATASET = _env_bool("LOOP_DATASET", True)
+PREFETCH_FACTOR = int(os.getenv("PREFETCH_FACTOR", "2"))
+USE_TENSORRT = _env_bool("USE_TENSORRT", True)
+TRT_DEBUG_TRACEBACK = _env_bool("TRT_DEBUG_TRACEBACK", True)
+ENABLE_LIDAR_BEV_EVAL = _env_bool("ENABLE_LIDAR_BEV_EVAL", True)
 
 EVAL_THRESHOLD = 0.5
 EVAL_DISTANCE_BINS_M: Tuple[Tuple[float, float], ...] = (
@@ -41,9 +79,13 @@ EVAL_BIN_MIN_IOU = {
     "20-30m": 0.45,
 }
 
-TENSORRT_CAM_ENGINE_PATH = "lss_camencode_trt_engine.pth"
-TENSORRT_BEV_ENGINE_PATH = "lss_bevencode_trt_engine.pth"
-TENSORRT_WORKSPACE_MB = 1024
+TENSORRT_CAM_ENGINE_PATH = _resolve_path(
+    os.getenv("TENSORRT_CAM_ENGINE_PATH", "lss_camencode_trt_engine.pth")
+)
+TENSORRT_BEV_ENGINE_PATH = _resolve_path(
+    os.getenv("TENSORRT_BEV_ENGINE_PATH", "lss_bevencode_trt_engine.pth")
+)
+TENSORRT_WORKSPACE_MB = int(os.getenv("TENSORRT_WORKSPACE_MB", "1024"))
 
 EGO_LENGTH_M = 4.084
 EGO_WIDTH_M = 1.85

@@ -75,14 +75,22 @@ pip install -r requirements.txt
 ## 4) Required assets
 
 Default values expected by the streaming runtime:
-- Dataset root: `/mnt/nvme/data/sets/nuscenes`
+- Dataset root: `./data/sets/nuscenes`
 - Weights file: `lss_clean_weights.pth` (in repo root)
 
-If needed, edit constants in `src/streaming/config.py`:
-- `DATAROOT`
-- `NUSCENES_VERSION`
-- `WEIGHTS_PATH`
-- `HOST_IP`, `PORT`
+Machine-specific values should go in a local `.env` file (not committed).
+
+1. Copy template:
+```bash
+cp .env.example .env
+```
+2. Edit `.env` with your machine paths/host settings (example keys):
+   - `DATAROOT`
+   - `NUSCENES_VERSION`
+   - `WEIGHTS_PATH`
+   - `HOST_IP`, `PORT`
+
+`src/streaming/config.py` auto-loads `.env` and then falls back to built-in defaults.
 
 ## 5) Run
 
@@ -159,3 +167,23 @@ The expected signature of a successful optimization is:
 Core Lift-Splat-Shoot components are derived from NVIDIA's original project:
 - Paper: Lift, Splat, Shoot (ECCV 2020)
 - License and attribution retained in source headers and `LICENSE`.
+
+## 8) Benchmark Harness (for reproducibility)
+
+Use the included harness to compare pure PyTorch vs TensorRT-accelerated runs on the exact same cached validation batches:
+
+```bash
+python scripts/benchmark_backends.py --modes torch,trt --num-batches 24 --warmup 8 --measure 32 --output benchmark_results.json
+```
+
+What it does:
+- Loads the same model weights and nuScenes split used by runtime inference.
+- Caches a fixed number of validation batches so both modes see identical inputs.
+- Measures per-stage latency (`geometry`, `camencode`, `voxel_pool`, `bevencode`) and total latency.
+- Reports FPS from mean total latency and computes `TRT over Torch` speedup when both modes are run.
+- Writes a JSON artifact (`benchmark_results.json`) for auditing/sharing.
+
+Notes:
+- First TRT run may include engine build/load overhead; rerun for steady-state numbers.
+- Ensure `.env` points to a valid dataset root and weights file before benchmarking.
+- If you only want baseline, run `--modes torch`.
