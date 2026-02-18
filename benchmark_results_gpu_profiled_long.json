@@ -1,0 +1,43 @@
+{
+  "timestamp_unix": 1771399813.8151028,
+  "device": "cuda",
+  "cuda_device_name": "Orin",
+  "dataroot": "/mnt/nvme/data/sets/nuscenes",
+  "weights_path": "/mnt/nvme/lss-bev-portfolio/lss_clean_weights.pth",
+  "num_cached_batches": 24,
+  "warmup_iters": 10,
+  "measure_iters": 80,
+  "modes": {
+    "trt": {
+      "geometry_ms": {
+        "mean": 4.404851475101168,
+        "median": 4.214212003716966,
+        "p95": 4.9482046495541
+      },
+      "camencode_ms": {
+        "mean": 12.008824524400552,
+        "median": 11.962894997850526,
+        "p95": 12.251106397525291
+      },
+      "voxel_pool_ms": {
+        "mean": 9.011723212825018,
+        "median": 8.647500500956085,
+        "p95": 10.281040851259604
+      },
+      "bevencode_ms": {
+        "mean": 10.250573100165639,
+        "median": 10.252892498101573,
+        "p95": 10.439448000033735
+      },
+      "total_ms": {
+        "mean": 35.791907375005394,
+        "median": 35.73171999960323,
+        "p95": 37.493276845270884
+      },
+      "fps_from_mean_total": 27.939276594639693,
+      "mode": "trt",
+      "using_trt_camencode": true,
+      "using_trt_bevencode": true
+    }
+  }
+}

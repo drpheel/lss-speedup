@@ -15,6 +15,10 @@ From the included reproducible benchmark harness on this setup (**NVIDIA Jetson 
 - **52.49x FPS** improvement vs the unparallelized voxel baseline (`torch_serial_voxel` -> `trt`)
 - **26.98x FPS** from voxel pooling parallelization alone (`torch_serial_voxel` -> `torch`)
 - **1.94x FPS** from TensorRT on top of parallel PyTorch (`torch` -> `trt`)
+- GPU usage measured on long TRT run (`--interval 0.1`, `--warmup 10`, `--measure 80`):
+  - all-sample mean **21.27%**, max **95.20%**
+  - active-only mean **61.40%**, median **80.90%**
+  - after 4s window mean **27.39%**, max **95.20%**
 
 ## Live Output Samples
 
@@ -212,3 +216,24 @@ Notes:
 - If you only want baseline, run `--modes torch`.
 - Serial voxel mode is intentionally very slow; reduce `--measure` if needed.
 - When comparing against the published datasheets, run on **Jetson AGX Orin** for closest reproduction.
+
+## 9) GPU Usage Test (CSV + Plot)
+
+You can profile GPU usage while running a benchmark command:
+
+```bash
+PYTHONPATH=/mnt/nvme/lss-bev-portfolio /mnt/nvme/conda_envs/lss-jp512/bin/python scripts/profile_gpu_usage.py \
+  --cmd "PYTHONPATH=/mnt/nvme/lss-bev-portfolio /mnt/nvme/conda_envs/lss-jp512/bin/python scripts/benchmark_backends.py --modes trt --num-batches 12 --warmup 2 --measure 8 --output benchmark_results_gpu_profiled.json" \
+  --interval 0.5 \
+  --csv assets/gpu_usage_trt.csv \
+  --plot assets/gpu_usage_trt.png \
+  --title "TRT Benchmark GPU Usage"
+```
+
+Generated artifacts in this repo:
+- CSV samples: `assets/gpu_usage_trt.csv`
+- Plot image: `assets/gpu_usage_trt.png`
+
+![TRT GPU usage profile](assets/gpu_usage_trt.png)
+
+Note: on Jetson this uses `/sys/devices/.../load` as the sampling backend, which is device-level GPU load. It is still useful for reproducing sustained GPU utilization during this benchmark run.
