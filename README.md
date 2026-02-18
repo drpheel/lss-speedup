@@ -20,6 +20,25 @@ From the included reproducible benchmark harness on this setup (**NVIDIA Jetson 
   - active-only mean **61.40%**, median **80.90%**
   - after 4s window mean **27.39%**, max **95.20%**
 
+## Current Eval Status (Quality)
+
+Latest saved eval artifacts:
+- JSON: `eval_quality_results.json`
+- Report: `eval_quality_report.md`
+
+Current TRT quality snapshot (24 measured frames on this setup):
+- IoU: **0.3708**
+- Precision: **0.5423**
+- Recall: **0.5397**
+- F1: **0.5410**
+- Near-field weighted IoU: **0.4362**
+- Distance bins IoU: **0-10m: 0.6279 (pass)**, **10-20m: 0.5100 (pass)**, **20-30m: 0.4085 (below 0.45 target)**
+
+Status:
+- TRT and Torch quality are currently near-identical (very small deltas in `eval_quality_results.json`).
+- The model currently falls short of the stricter configured global thresholds in `src/streaming/config.py`.
+- We are actively working on quality improvements while preserving the current realtime performance gains.
+
 ## Live Output Samples
 
 ### Camera Stream (`/cam`)

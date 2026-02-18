@@ -1,0 +1,211 @@
+{
+  "timestamp_unix": 1771400622.049163,
+  "device": "cuda",
+  "cuda_device_name": "Orin",
+  "dataroot": "/mnt/nvme/data/sets/nuscenes",
+  "weights_path": "/mnt/nvme/lss-bev-portfolio/lss_clean_weights.pth",
+  "num_cached_batches": 24,
+  "warmup_iters": 4,
+  "measure_iters": 24,
+  "modes": {
+    "torch": {
+      "frames": 24,
+      "threshold": 0.5,
+      "iou": 0.37099248841297744,
+      "precision": 0.5425119192296906,
+      "recall": 0.5398999883707408,
+      "f1": 0.5412028024200599,
+      "accuracy": 0.959003125,
+      "pred_pos_rate": 0.04457083333333333,
+      "tgt_pos_rate": 0.044786458333333334,
+      "pos_rate_diff": -0.000215625000000004,
+      "nearfield_weighting": {
+        "radius_m": 20.0,
+        "weight": 3.0,
+        "weighted_iou": 0.4365853202081072,
+        "weighted_precision": 0.5835188473948824,
+        "weighted_recall": 0.6342109913412264,
+        "weighted_f1": 0.6078098029636867
+      },
+      "distance_bins": {
+        "0-10m": {
+          "iou": 0.6275642877780988,
+          "precision": 0.6932652409830833,
+          "recall": 0.8688,
+          "f1": 0.7711698917095686
+        },
+        "10-20m": {
+          "iou": 0.5110231164383562,
+          "precision": 0.6180429717835879,
+          "recall": 0.7469106835601439,
+          "f1": 0.6763935122884057
+        },
+        "20-30m": {
+          "iou": 0.40911518604237135,
+          "precision": 0.5548379308263415,
+          "recall": 0.609024050884516,
+          "f1": 0.580669614655717
+        }
+      },
+      "last_iou": 0.34667418263810595,
+      "last_precision": 0.5150753768844221,
+      "last_recall": 0.5146443514644351,
+      "last_f1": 0.5148597739640016,
+      "last_pos_rate_diff": -2.4999999999997247e-05,
+      "threshold_checks": {
+        "overall_pass": false,
+        "global": {
+          "iou": {
+            "value": 0.37099248841297744,
+            "threshold": 0.45,
+            "pass": false
+          },
+          "precision": {
+            "value": 0.5425119192296906,
+            "threshold": 0.75,
+            "pass": false
+          },
+          "recall": {
+            "value": 0.5398999883707408,
+            "threshold": 0.8,
+            "pass": false
+          },
+          "f1": {
+            "value": 0.5412028024200599,
+            "threshold": 0.77,
+            "pass": false
+          },
+          "nearfield_weighted_iou": {
+            "value": 0.4365853202081072,
+            "threshold": 0.5,
+            "pass": false
+          }
+        },
+        "bins": {
+          "0-10m": {
+            "value": 0.6275642877780988,
+            "threshold": 0.6,
+            "pass": true
+          },
+          "10-20m": {
+            "value": 0.5110231164383562,
+            "threshold": 0.5,
+            "pass": true
+          },
+          "20-30m": {
+            "value": 0.40911518604237135,
+            "threshold": 0.45,
+            "pass": false
+          }
+        }
+      },
+      "backend_mode": "torch",
+      "using_trt_camencode": false,
+      "using_trt_bevencode": false,
+      "elapsed_s": 4.8429436683654785
+    },
+    "trt": {
+      "frames": 24,
+      "threshold": 0.5,
+      "iou": 0.3707893895813359,
+      "precision": 0.54228890602725,
+      "recall": 0.5396906617048494,
+      "f1": 0.5409866641798005,
+      "accuracy": 0.9589833333333333,
+      "pred_pos_rate": 0.044571875,
+      "tgt_pos_rate": 0.044786458333333334,
+      "pos_rate_diff": -0.00021458333333333746,
+      "nearfield_weighting": {
+        "radius_m": 20.0,
+        "weight": 3.0,
+        "weighted_iou": 0.43616603378289903,
+        "weighted_precision": 0.5830343189348003,
+        "weighted_recall": 0.6338983511628855,
+        "weighted_f1": 0.6074033552151714
+      },
+      "distance_bins": {
+        "0-10m": {
+          "iou": 0.6278532216122508,
+          "precision": 0.6933631142310147,
+          "recall": 0.8692,
+          "f1": 0.7713880014199503
+        },
+        "10-20m": {
+          "iou": 0.5100491768227496,
+          "precision": 0.617046042421107,
+          "recall": 0.7462849992178946,
+          "f1": 0.6755398230088495
+        },
+        "20-30m": {
+          "iou": 0.4085002225189141,
+          "precision": 0.5544213578158975,
+          "recall": 0.6081627244417942,
+          "f1": 0.5800499225883914
+        }
+      },
+      "last_iou": 0.34821933295647256,
+      "last_precision": 0.5176470588235295,
+      "last_recall": 0.5154811715481171,
+      "last_f1": 0.5165618448637317,
+      "last_pos_rate_diff": -0.0001250000000000001,
+      "threshold_checks": {
+        "overall_pass": false,
+        "global": {
+          "iou": {
+            "value": 0.3707893895813359,
+            "threshold": 0.45,
+            "pass": false
+          },
+          "precision": {
+            "value": 0.54228890602725,
+            "threshold": 0.75,
+            "pass": false
+          },
+          "recall": {
+            "value": 0.5396906617048494,
+            "threshold": 0.8,
+            "pass": false
+          },
+          "f1": {
+            "value": 0.5409866641798005,
+            "threshold": 0.77,
+            "pass": false
+          },
+          "nearfield_weighted_iou": {
+            "value": 0.43616603378289903,
+            "threshold": 0.5,
+            "pass": false
+          }
+        },
+        "bins": {
+          "0-10m": {
+            "value": 0.6278532216122508,
+            "threshold": 0.6,
+            "pass": true
+          },
+          "10-20m": {
+            "value": 0.5100491768227496,
+            "threshold": 0.5,
+            "pass": true
+          },
+          "20-30m": {
+            "value": 0.4085002225189141,
+            "threshold": 0.45,
+            "pass": false
+          }
+        }
+      },
+      "backend_mode": "trt",
+      "using_trt_camencode": true,
+      "using_trt_bevencode": true,
+      "elapsed_s": 1.0971791744232178
+    }
+  },
+  "delta_trt_minus_torch": {
+    "iou": -0.00020309883164154607,
+    "precision": -0.00022301320244055844,
+    "recall": -0.00020932666589146276,
+    "f1": -0.00021613824025945583,
+    "near_weighted_iou": -0.00041928642520816517
+  }
+}
