@@ -8,8 +8,16 @@ A real-time Bird's-Eye-View (BEV) segmentation demo built on Lift-Splat-Shoot (E
 
 ## 1) What this repo contains
 
-- `stream_inference.py` - real-time inference + HTTP streaming server
-- `src/` - minimal model/data utilities required by the script
+- `stream_inference.py` - thin compatibility entrypoint (`python stream_inference.py`)
+- `src/streaming/` - modular runtime package:
+  - `config.py` - runtime knobs (dataset paths, TensorRT flags, stream params)
+  - `inference.py` - core inference loop and profiling logs
+  - `tensorrt_utils.py` - TensorRT build/load + compatibility patch
+  - `eval_metrics.py` - online LiDAR-referenced metrics and `/eval` rendering
+  - `http_server.py` - `/cam`, `/bev`, `/eval`, `/eval.json` handlers
+  - `visualization.py` - camera tiling, BEV coloring, overlays
+  - `state.py` - thread-safe shared frame/eval state
+- `src/` - minimal model/data utilities used by streaming runtime
 - `requirements.txt` - Python dependencies
 
 ## 2) Prerequisites
@@ -66,11 +74,11 @@ pip install -r requirements.txt
 
 ## 4) Required assets
 
-Default values expected by `stream_inference.py`:
+Default values expected by the streaming runtime:
 - Dataset root: `/mnt/nvme/data/sets/nuscenes`
 - Weights file: `lss_clean_weights.pth` (in repo root)
 
-If needed, edit constants near the top of `stream_inference.py`:
+If needed, edit constants in `src/streaming/config.py`:
 - `DATAROOT`
 - `NUSCENES_VERSION`
 - `WEIGHTS_PATH`
@@ -96,10 +104,55 @@ Open in browser:
 
 ## 6) Optional TensorRT
 
-The script can auto-build/load TensorRT engines when `torch2trt` is available.
+The runtime can auto-build/load TensorRT engines when `torch2trt` is available.
 Generated engine files (default):
 - `lss_camencode_trt_engine.pth`
 - `lss_bevencode_trt_engine.pth`
+
+### How the ~20x speedup happens (camencode + bevencode)
+
+The speedup does **not** come from replacing the entire pipeline with TensorRT. It comes from targeting the two heaviest convolutional stages and keeping shape-sensitive glue logic in PyTorch.
+
+**Pipeline stages in this project**
+- `get_geometry(...)` (PyTorch): camera calibration transforms
+- `camencode(...)` (**TensorRT candidate**): per-camera CNN feature extraction
+- `voxel_pooling(...)` (PyTorch): lift+splat aggregation into BEV volume
+- `bevencode(...)` (**TensorRT candidate**): BEV CNN head for segmentation logits
+
+In practice, `camencode` and `bevencode` dominate GPU compute time, while geometry and voxel pooling are smaller or harder to export cleanly. Converting just those two blocks captures most of the available acceleration with minimal behavior risk.
+
+**Why these two blocks accelerate so much**
+- TensorRT fuses Conv+BN+activation patterns into fewer kernels.
+- TensorRT chooses optimized kernels per layer shape for your device.
+- FP16 execution (`USE_FP16=True`) increases tensor core utilization and cuts memory bandwidth pressure.
+- Reduced kernel launch overhead and better memory planning inside engine segments.
+- Reusing serialized engines (`*.pth`) avoids rebuild cost on subsequent runs.
+
+**What remains in PyTorch (and why)**
+- Geometry projection and voxel pooling remain in PyTorch to preserve exact project-specific logic and avoid brittle graph export for dynamic indexing/scatter-like operations.
+- This hybrid design is a common production pattern: accelerate dense CNN trunks/heads with TensorRT and keep custom data movement/geometry in PyTorch.
+- Voxel pooling is still GPU-parallelized in PyTorch (vectorized tensor ops + scatter-style `index_put_(accumulate=True)`), so it is not a serial CPU fallback path.
+
+**How to reproduce and verify in this repo**
+1. Run baseline (PyTorch only): set `USE_TENSORRT = False` in `src/streaming/config.py`.
+2. Run hybrid TRT mode: set `USE_TENSORRT = True`.
+3. Compare steady-state logs from `inference.py`:
+   - `fps=...`
+   - `infer_total=...`
+   - `geom=... cam=... voxel=... bev=...`
+4. Confirm backend label changes:
+   - `Torch`
+   - `TRT(cam)` / `TRT(bev)` / `TRT(cam+bev)`
+
+The expected signature of a successful optimization is:
+- large drop in `cam` and `bev` stage times,
+- small/no change in `geom` and `voxel`,
+- large increase in end-to-end `fps`.
+
+**Notes on first run vs warm run**
+- First TensorRT run may be slower due to engine build + tactic selection.
+- Subsequent runs load prebuilt engines and show true steady-state performance.
+- The headline speedup should be reported from warm runs with matching input resolution/batch shape.
 
 ## 7) Credits
 
