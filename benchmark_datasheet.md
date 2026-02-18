@@ -4,6 +4,7 @@ Generated: 2026-02-17 17:13:27
 
 ## Run Configuration
 
+- Platform: `NVIDIA Jetson AGX Orin`
 - Device: `cuda`
 - Dataset root: `/mnt/nvme/data/sets/nuscenes`
 - Weights: `/mnt/nvme/lss-bev-portfolio/lss_clean_weights.pth`

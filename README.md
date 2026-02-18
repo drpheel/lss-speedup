@@ -8,7 +8,7 @@ A real-time Bird's-Eye-View (BEV) segmentation demo built on Lift-Splat-Shoot (E
 
 ## Headline Results
 
-From the included reproducible benchmark harness on this setup:
+From the included reproducible benchmark harness on this setup (**NVIDIA Jetson AGX Orin**):
 - **52.49x FPS** improvement vs the unparallelized voxel baseline (`torch_serial_voxel` -> `trt`)
 - **26.98x FPS** from voxel pooling parallelization alone (`torch_serial_voxel` -> `torch`)
 - **1.94x FPS** from TensorRT on top of parallel PyTorch (`torch` -> `trt`)
@@ -43,6 +43,7 @@ From the included reproducible benchmark harness on this setup:
 - CUDA-capable GPU recommended
 - nuScenes dataset available locally
 - Trained LSS weights (`lss_clean_weights.pth`)
+- Benchmark numbers in this README/datasheets were collected on **Jetson AGX Orin**.
 
 ## 3) Setup
 
@@ -66,6 +67,7 @@ sudo apt-get install -y libgeos-dev
 ### Option B: Jetson/aarch64 with CUDA (recommended for GPU inference)
 
 On Jetson, install a PyTorch/TorchVision build that matches your JetPack version (from NVIDIA wheels), then install this repo's dependencies.
+This project and the published benchmark figures were validated on **Jetson AGX Orin**.
 
 Typical workflow:
 
@@ -202,3 +204,4 @@ Notes:
 - Ensure `.env` points to a valid dataset root and weights file before benchmarking.
 - If you only want baseline, run `--modes torch`.
 - Serial voxel mode is intentionally very slow; reduce `--measure` if needed.
+- When comparing against the published datasheets, run on **Jetson AGX Orin** for closest reproduction.

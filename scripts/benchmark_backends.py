@@ -302,13 +302,16 @@ def main() -> None:
             raise ValueError(f"Unsupported mode: {m}")
 
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    cuda_device_name = torch.cuda.get_device_name(0) if device.type == "cuda" else "cpu"
     print(f"Benchmark device: {device}")
+    print(f"CUDA device name: {cuda_device_name}")
     print(f"Caching {args.num_batches} validation batches from {DATAROOT}...")
     cached_batches = build_cached_batches(device, args.num_batches)
 
     results = {
         "timestamp_unix": time.time(),
         "device": str(device),
+        "cuda_device_name": cuda_device_name,
         "dataroot": DATAROOT,
         "weights_path": WEIGHTS_PATH,
         "num_cached_batches": len(cached_batches),
