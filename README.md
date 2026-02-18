@@ -167,7 +167,7 @@ In practice, `camencode` and `bevencode` dominate GPU compute time, while geomet
 - Voxel pooling is still GPU-parallelized in PyTorch (vectorized tensor ops + scatter-style `index_put_(accumulate=True)`), so it is not a serial CPU fallback path.
 
 **Unparallelized voxel baseline comparison**
-- For skeptical verification, the harness includes `torch_serial_voxel`, a deliberately naive serial voxel accumulation path used as the out-of-the-box/unoptimized LSS-style baseline reference.
+- For verification, the harness includes `torch_serial_voxel`, a serial voxel accumulation path used as the out-of-the-box/unoptimized LSS-style baseline reference.
 - `torch` uses the production parallel voxel pooling path (vectorized tensor ops + scatter accumulation).
 - `trt` keeps the same parallel voxel path and adds TensorRT for `camencode`/`bevencode`.
 
