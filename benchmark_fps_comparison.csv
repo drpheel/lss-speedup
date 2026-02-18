@@ -1,0 +1,3 @@
+mode,total_ms_mean,fps,geometry_ms_mean,camencode_ms_mean,voxel_pool_ms_mean,bevencode_ms_mean
+torch,68.37,14.63,4.82,37.02,7.60,18.80
+trt,35.64,28.06,4.31,11.95,9.05,10.22

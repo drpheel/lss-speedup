@@ -1,0 +1,74 @@
+{
+  "timestamp_unix": 1771377037.3843398,
+  "device": "cuda",
+  "dataroot": "/mnt/nvme/data/sets/nuscenes",
+  "weights_path": "/mnt/nvme/lss-bev-portfolio/lss_clean_weights.pth",
+  "num_cached_batches": 24,
+  "warmup_iters": 8,
+  "measure_iters": 32,
+  "modes": {
+    "torch": {
+      "geometry_ms": {
+        "mean": 4.824477906140601,
+        "median": 4.844666002099984,
+        "p95": 4.996442998526618
+      },
+      "camencode_ms": {
+        "mean": 37.02084362487312,
+        "median": 37.007942501077196,
+        "p95": 37.333902397585916
+      },
+      "voxel_pool_ms": {
+        "mean": 7.598729843607543,
+        "median": 7.5580405009532114,
+        "p95": 7.759558250108967
+      },
+      "bevencode_ms": {
+        "mean": 18.80250481258372,
+        "median": 18.780885000523995,
+        "p95": 18.96924865031906
+      },
+      "total_ms": {
+        "mean": 68.36983168750521,
+        "median": 68.32969400238653,
+        "p95": 68.93658864883037
+      },
+      "fps_from_mean_total": 14.626334090899231,
+      "mode": "torch",
+      "using_trt_camencode": false,
+      "using_trt_bevencode": false
+    },
+    "trt": {
+      "geometry_ms": {
+        "mean": 4.310223156039683,
+        "median": 4.193319000478368,
+        "p95": 4.970204599885619
+      },
+      "camencode_ms": {
+        "mean": 11.947728125164758,
+        "median": 11.934272501093801,
+        "p95": 12.088905449490994
+      },
+      "voxel_pool_ms": {
+        "mean": 9.048638436979672,
+        "median": 8.699773999978788,
+        "p95": 10.279724248903221
+      },
+      "bevencode_ms": {
+        "mean": 10.220025843636904,
+        "median": 10.252743000819464,
+        "p95": 10.344458749750629
+      },
+      "total_ms": {
+        "mean": 35.640343124327956,
+        "median": 35.29014099876804,
+        "p95": 37.455346600108896
+      },
+      "fps_from_mean_total": 28.058091262241636,
+      "mode": "trt",
+      "using_trt_camencode": true,
+      "using_trt_bevencode": true
+    }
+  },
+  "speedup_trt_over_torch_fps": 1.9183269770721214
+}

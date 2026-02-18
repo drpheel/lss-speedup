@@ -1,0 +1,106 @@
+{
+  "timestamp_unix": 1771377207.0532153,
+  "device": "cuda",
+  "dataroot": "/mnt/nvme/data/sets/nuscenes",
+  "weights_path": "/mnt/nvme/lss-bev-portfolio/lss_clean_weights.pth",
+  "num_cached_batches": 12,
+  "warmup_iters": 2,
+  "measure_iters": 6,
+  "modes": {
+    "torch": {
+      "geometry_ms": {
+        "mean": 4.940194000785898,
+        "median": 4.983698501746403,
+        "p95": 5.011810749238066
+      },
+      "camencode_ms": {
+        "mean": 37.793077499372885,
+        "median": 37.772959998619626,
+        "p95": 37.99500974946568
+      },
+      "voxel_pool_ms": {
+        "mean": 7.969168832763292,
+        "median": 7.863647499107174,
+        "p95": 8.483358248668083
+      },
+      "bevencode_ms": {
+        "mean": 18.97768649966262,
+        "median": 18.872655999075505,
+        "p95": 19.37965350043669
+      },
+      "total_ms": {
+        "mean": 69.81559516619502,
+        "median": 69.63034000000334,
+        "p95": 70.78329599971767
+      },
+      "fps_from_mean_total": 14.323447327484846,
+      "mode": "torch",
+      "using_trt_camencode": false,
+      "using_trt_bevencode": false
+    },
+    "trt": {
+      "geometry_ms": {
+        "mean": 4.42873816791689,
+        "median": 4.241643000568729,
+        "p95": 4.830673000469687
+      },
+      "camencode_ms": {
+        "mean": 12.167494165017464,
+        "median": 12.160363497969229,
+        "p95": 12.320764998548839
+      },
+      "voxel_pool_ms": {
+        "mean": 8.963376334577333,
+        "median": 9.069004001503345,
+        "p95": 9.7495712525415
+      },
+      "bevencode_ms": {
+        "mean": 10.274115165884723,
+        "median": 10.303944998668157,
+        "p95": 10.413737998533179
+      },
+      "total_ms": {
+        "mean": 35.94675966633076,
+        "median": 35.76073099975474,
+        "p95": 36.783037501663784
+      },
+      "fps_from_mean_total": 27.818919126016294,
+      "mode": "trt",
+      "using_trt_camencode": true,
+      "using_trt_bevencode": true
+    },
+    "torch_serial_voxel": {
+      "geometry_ms": {
+        "mean": 5.027224166648618,
+        "median": 5.022050499974284,
+        "p95": 5.043082999691251
+      },
+      "camencode_ms": {
+        "mean": 38.92420000071676,
+        "median": 38.94970550209109,
+        "p95": 39.2726189993482
+      },
+      "voxel_pool_ms": {
+        "mean": 1819.5036593327434,
+        "median": 1818.7560094993387,
+        "p95": 1835.1222820001567
+      },
+      "bevencode_ms": {
+        "mean": 19.77252999980313,
+        "median": 19.7954800005391,
+        "p95": 19.911192248400766
+      },
+      "total_ms": {
+        "mean": 1883.3810284989643,
+        "median": 1882.527099998697,
+        "p95": 1899.170911998226
+      },
+      "fps_from_mean_total": 0.5309600048360845,
+      "mode": "torch_serial_voxel",
+      "using_trt_camencode": false,
+      "using_trt_bevencode": false
+    }
+  },
+  "speedup_trt_over_torch_fps": 1.9421943956630734,
+  "speedup_parallel_voxel_over_serial_fps": 26.976508959289152
+}

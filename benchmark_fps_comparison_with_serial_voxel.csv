@@ -1,0 +1,4 @@
+mode,fps,total_ms,geometry_ms,camencode_ms,voxel_pool_ms,bevencode_ms
+torch,14.32,69.82,4.94,37.79,7.97,18.98
+trt,27.82,35.95,4.43,12.17,8.96,10.27
+torch_serial_voxel,0.53,1883.38,5.03,38.92,1819.50,19.77

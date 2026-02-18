@@ -6,6 +6,23 @@ A real-time Bird's-Eye-View (BEV) segmentation demo built on Lift-Splat-Shoot (E
 - Online LiDAR-referenced evaluation dashboard (`/eval`, `/eval.json`)
 - Optional TensorRT acceleration for `camencode` and `bevencode`
 
+## Headline Results
+
+From the included reproducible benchmark harness on this setup:
+- **52.49x FPS** improvement vs the unparallelized voxel baseline (`torch_serial_voxel` -> `trt`)
+- **26.98x FPS** from voxel pooling parallelization alone (`torch_serial_voxel` -> `torch`)
+- **1.94x FPS** from TensorRT on top of parallel PyTorch (`torch` -> `trt`)
+
+## Live Output Samples
+
+### Camera Stream (`/cam`)
+
+![Camera stream output](assets/cam.gif)
+
+### BEV Stream (`/bev`)
+
+![BEV stream output](assets/bev.gif)
+
 ## 1) What this repo contains
 
 - `stream_inference.py` - thin compatibility entrypoint (`python stream_inference.py`)
@@ -117,9 +134,11 @@ Generated engine files (default):
 - `lss_camencode_trt_engine.pth`
 - `lss_bevencode_trt_engine.pth`
 
-### How the ~20x speedup happens (camencode + bevencode)
+### How the speedup happens (voxel parallelization + TensorRT cam/bev)
 
-The speedup does **not** come from replacing the entire pipeline with TensorRT. It comes from targeting the two heaviest convolutional stages and keeping shape-sensitive glue logic in PyTorch.
+The speedup does **not** come from replacing the entire pipeline with TensorRT. It is a stacked optimization:
+1. use a parallel voxel pooling path in PyTorch;
+2. accelerate `camencode` + `bevencode` with TensorRT.
 
 **Pipeline stages in this project**
 - `get_geometry(...)` (PyTorch): camera calibration transforms
@@ -141,21 +160,14 @@ In practice, `camencode` and `bevencode` dominate GPU compute time, while geomet
 - This hybrid design is a common production pattern: accelerate dense CNN trunks/heads with TensorRT and keep custom data movement/geometry in PyTorch.
 - Voxel pooling is still GPU-parallelized in PyTorch (vectorized tensor ops + scatter-style `index_put_(accumulate=True)`), so it is not a serial CPU fallback path.
 
-**How to reproduce and verify in this repo**
-1. Run baseline (PyTorch only): set `USE_TENSORRT = False` in `src/streaming/config.py`.
-2. Run hybrid TRT mode: set `USE_TENSORRT = True`.
-3. Compare steady-state logs from `inference.py`:
-   - `fps=...`
-   - `infer_total=...`
-   - `geom=... cam=... voxel=... bev=...`
-4. Confirm backend label changes:
-   - `Torch`
-   - `TRT(cam)` / `TRT(bev)` / `TRT(cam+bev)`
+**Unparallelized voxel baseline comparison**
+- For skeptical verification, the harness includes `torch_serial_voxel`, a deliberately naive serial voxel accumulation path used as the out-of-the-box/unoptimized LSS-style baseline reference.
+- `torch` uses the production parallel voxel pooling path (vectorized tensor ops + scatter accumulation).
+- `trt` keeps the same parallel voxel path and adds TensorRT for `camencode`/`bevencode`.
 
-The expected signature of a successful optimization is:
-- large drop in `cam` and `bev` stage times,
-- small/no change in `geom` and `voxel`,
-- large increase in end-to-end `fps`.
+The expected signature of a successful optimization stack is:
+- `torch_serial_voxel -> torch`: huge drop in voxel pooling time and large FPS jump.
+- `torch -> trt`: large drop in `cam`/`bev` stage times and additional FPS jump.
 
 **Notes on first run vs warm run**
 - First TensorRT run may be slower due to engine build + tactic selection.
@@ -170,20 +182,23 @@ Core Lift-Splat-Shoot components are derived from NVIDIA's original project:
 
 ## 8) Benchmark Harness (for reproducibility)
 
-Use the included harness to compare pure PyTorch vs TensorRT-accelerated runs on the exact same cached validation batches:
+Use the included harness to compare unparallelized voxel baseline, parallel PyTorch, and TensorRT on the exact same cached validation batches:
 
 ```bash
-python scripts/benchmark_backends.py --modes torch,trt --num-batches 24 --warmup 8 --measure 32 --output benchmark_results.json
+python scripts/benchmark_backends.py --modes torch,trt,torch_serial_voxel --num-batches 12 --warmup 2 --measure 6 --output benchmark_results_with_serial_voxel.json
 ```
 
 What it does:
 - Loads the same model weights and nuScenes split used by runtime inference.
 - Caches a fixed number of validation batches so both modes see identical inputs.
 - Measures per-stage latency (`geometry`, `camencode`, `voxel_pool`, `bevencode`) and total latency.
-- Reports FPS from mean total latency and computes `TRT over Torch` speedup when both modes are run.
-- Writes a JSON artifact (`benchmark_results.json`) for auditing/sharing.
+- Reports FPS from mean total latency and computes:
+  - `TRT over Torch` speedup
+  - `parallel voxel over serial voxel` speedup
+- Writes a JSON artifact for auditing/sharing.
 
 Notes:
 - First TRT run may include engine build/load overhead; rerun for steady-state numbers.
 - Ensure `.env` points to a valid dataset root and weights file before benchmarking.
 - If you only want baseline, run `--modes torch`.
+- Serial voxel mode is intentionally very slow; reduce `--measure` if needed.
